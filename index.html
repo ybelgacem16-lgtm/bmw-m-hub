@@ -3,214 +3,285 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BMW M Performance Hub</title>
+    <title>⚠️ System Critical Error</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #0d0e12; color: #e1e4e8; padding: 20px; }
-        
-        .container { max-width: 900px; margin: 0 auto; }
-        
-        /* Stripe M Colors */
-        .m-bar { height: 6px; background: linear-gradient(90deg, #0066b1 0%, #0066b1 33%, #001e50 33%, #001e50 66%, #e21b23 66%); border-radius: 3px; margin-bottom: 20px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: #000;
+            color: #0f0;
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            user-select: none;
+        }
 
-        header { text-align: center; margin-bottom: 30px; }
-        header h1 { font-size: 28px; font-weight: 800; letter-spacing: 1px; color: #fff; }
-        header p { color: #8a8f9d; font-size: 14px; margin-top: 5px; }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
 
-        /* Navigation Buttons */
-        .model-selector { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; }
-        .btn-model { flex: 1; min-width: 100px; padding: 12px; background: #161922; border: 1px solid #2a2f3d; color: #a0a5b5; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; text-align: center; }
-        .btn-model.active, .btn-model:hover { background: #e21b23; color: #fff; border-color: #e21b23; }
+        .overlay {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            background: rgba(10, 0, 0, 0.95);
+            padding: 30px 20px;
+            border: 2px solid #ff0000;
+            border-radius: 15px;
+            box-shadow: 0 0 30px #ff0000;
+            max-width: 90%;
+            width: 420px;
+        }
 
-        /* Main Card */
-        .main-card { background: #161922; border-radius: 12px; border: 1px solid #2a2f3d; padding: 20px; margin-bottom: 20px; }
-        .car-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #2a2f3d; padding-bottom: 15px; }
-        .car-title { font-size: 22px; font-weight: bold; color: #fff; }
-        .engine-badge { background: #0066b1; color: #fff; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: bold; }
+        h1 {
+            color: #ff0000;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            animation: blink 0.8s infinite alternate;
+        }
 
-        /* Stage Selector */
-        .stage-box { display: flex; gap: 10px; margin-bottom: 20px; background: #0d0e12; padding: 6px; border-radius: 8px; }
-        .btn-stage { flex: 1; padding: 10px; border: none; background: transparent; color: #8a8f9d; font-weight: bold; cursor: pointer; border-radius: 6px; transition: 0.3s; }
-        .btn-stage.active { background: #2a2f3d; color: #fff; }
+        @keyframes blink {
+            from { opacity: 1; }
+            to { opacity: 0.3; }
+        }
 
-        /* Performance Specs Grid */
-        .specs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px; }
-        .spec-card { background: #0d0e12; padding: 15px; border-radius: 8px; border: 1px solid #2a2f3d; text-align: center; }
-        .spec-title { font-size: 12px; color: #8a8f9d; margin-bottom: 5px; }
-        .spec-value { font-size: 24px; font-weight: bold; color: #0066b1; }
-        .spec-unit { font-size: 12px; color: #8a8f9d; }
+        .status-text {
+            color: #ffffff;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-        /* Specs Table */
-        .details-list { margin-top: 15px; }
-        .details-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #2a2f3d; font-size: 14px; }
-        .details-item:last-child { border-bottom: none; }
-        .details-label { color: #8a8f9d; }
-        .details-val { font-weight: bold; color: #fff; }
+        .timer {
+            font-size: 2.2rem;
+            color: #ffcc00;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            background-color: #222;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #444;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            width: 0%;
+            height: 20px;
+            background: linear-gradient(90deg, #ff0000, #ffcc00);
+            transition: width 1s linear;
+        }
+
+        .prank-reveal {
+            display: none;
+            color: #00ffcc;
+            font-size: 2rem;
+            font-weight: bold;
+            text-shadow: 0 0 10px #00ffcc;
+        }
+
+        .start-btn {
+            background: #ff0000;
+            color: #fff;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 0 15px #ff0000;
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="m-bar"></div>
-    <header>
-        <h1>BMW ///M PERFORMANCE SPECIFICATIONS</h1>
-        <p>استعراض التفاصيل التقنية ومراحل التعديل لسيارات M Power</p>
-    </header>
+    <canvas id="matrix"></canvas>
 
-    <!-- اختيار موديل السيارة -->
-    <div class="model-selector">
-        <button class="btn-model active" onclick="selectModel('m3')">BMW M3</button>
-        <button class="btn-model" onclick="selectModel('m4')">BMW M4</button>
-        <button class="btn-model" onclick="selectModel('m5')">BMW M5</button>
-        <button class="btn-model" onclick="selectModel('m8')">BMW M8</button>
-    </div>
-
-    <!-- كارت تفاصيل السيارة -->
-    <div class="main-card">
-        <div class="car-header">
-            <div class="car-title" id="car-name">BMW M3 Competition</div>
-            <div class="engine-badge" id="engine-code">S58 3.0L Twin-Turbo</div>
+    <div class="overlay" id="box">
+        <!-- شاشة البدء لتفعيل الصوت وملء الشاشة -->
+        <div id="start-screen">
+            <h1 style="color: #ffcc00; animation: none;">⚠️ تحذير أمني عاجل</h1>
+            <p style="color: #fff; margin-bottom: 20px;">تم اكتشاف ثغرة خطيرة في جهازك!</p>
+            <button class="start-btn" onclick="startPrank()">فحص وتصليح النظام 🛠️</button>
         </div>
 
-        <!-- أزرار الـ Stage -->
-        <div class="stage-box">
-            <button class="btn-stage active" onclick="selectStage('stock')">Stock (الأصلي)</button>
-            <button class="btn-stage" onclick="selectStage('stage1')">Stage 1</button>
-            <button class="btn-stage" onclick="selectStage('stage2')">Stage 2</button>
+        <!-- شاشة المقلب -->
+        <div id="prank-screen" style="display: none;">
+            <h1>⚠️ SYSTEM CRITICAL ERROR</h1>
+            <div class="status-text" id="status">جاري الاتصال بالسيرفر الخارجي...</div>
+            <div class="timer" id="timer">03:00</div>
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="bar"></div>
+            </div>
+            <p style="color: #888; font-size: 0.85rem;">لا تقم بإغلاق الصفحة حتى لا تفقد ملفاتك نهائياً!</p>
         </div>
 
-        <!-- كروت الأرقام الرئيسية -->
-        <div class="specs-grid">
-            <div class="spec-card">
-                <div class="spec-title">القوة الحصانية</div>
-                <div class="spec-value" id="hp-val">510</div>
-                <div class="spec-unit">حصان (HP)</div>
-            </div>
-            <div class="spec-card">
-                <div class="spec-title">عزم الدوران</div>
-                <div class="spec-value" id="torque-val">650</div>
-                <div class="spec-unit">نيوتن متر (Nm)</div>
-            </div>
-            <div class="spec-card">
-                <div class="spec-title">التسارع 0-100 كم/س</div>
-                <div class="spec-value" id="acc-val" style="color: #e21b23;">3.5</div>
-                <div class="spec-unit">ثواني</div>
-            </div>
-        </div>
-
-        <!-- باقي التفاصيل التقنية -->
-        <div class="details-list">
-            <div class="details-item">
-                <span class="details-label">نوع المحرك:</span>
-                <span class="details-val" id="engine-type">6 أسطوانات خطي (Inline-6) Twin-Turbo</span>
-            </div>
-            <div class="details-item">
-                <span class="details-label">ناقل الحركة:</span>
-                <span class="details-val" id="trans-type">8-Speed M Steptronic (أوتوماتيك)</span>
-            </div>
-            <div class="details-item">
-                <span class="details-label">نظام الدفع:</span>
-                <span class="details-val" id="drivetrain">M xDrive (دفع رباعي ذكي)</span>
-            </div>
-            <div class="details-item">
-                <span class="details-label">التعديلات المطلوبة لهذه المرحلة:</span>
-                <span class="details-val" id="stage-mods">برمجة المصنع بدون أي تعديلات ميكانيكية.</span>
-            </div>
+        <!-- النهاية -->
+        <div class="prank-reveal" id="joke">
+            🤣 تعيش وتاكل غيرها! <br> مقلب يا معلم! 😜❤️
         </div>
     </div>
-</div>
 
-<script>
-    const bmwData = {
-        m3: {
-            name: "BMW M3 Competition (G80)",
-            engineCode: "S58 3.0L Twin-Turbo",
-            engineType: "6 أسطوانات خطي (Inline-6)",
-            trans: "8-Speed M Steptronic",
-            drive: "M xDrive / Rear-Wheel Drive",
-            stages: {
-                stock: { hp: 510, torque: 650, acc: 3.5, mods: "برمجة المصنع الأساسية." },
-                stage1: { hp: 620, torque: 750, acc: 3.1, mods: "تعديل برمجيات المحرك (ECU Remap) فقط." },
-                stage2: { hp: 700, torque: 850, acc: 2.8, mods: "برمجة ECU + العادم (Downpipe) + فلاتر هواء رياضية." }
+    <script>
+        let prankActive = false;
+
+        // --- 1. حيل منع الخروج وتعطيل زر الرجوع ---
+        // تنبيه عند محاولة إغلاق Tab أو الصفحة
+        window.addEventListener('beforeunload', function (e) {
+            if (prankActive) {
+                e.preventDefault();
+                e.returnValue = 'هل أنت متأكد؟ سيتم تشفير جميع بياناتك فوراً!';
+                return e.returnValue;
             }
-        },
-        m4: {
-            name: "BMW M4 Competition (G82)",
-            engineCode: "S58 3.0L Twin-Turbo",
-            engineType: "6 أسطوانات خطي (Inline-6)",
-            trans: "8-Speed M Steptronic",
-            drive: "M xDrive / Rear-Wheel Drive",
-            stages: {
-                stock: { hp: 510, torque: 650, acc: 3.4, mods: "برمجة المصنع الأساسية." },
-                stage1: { hp: 620, torque: 760, acc: 3.0, mods: "تعديل برمجيات المحرك (ECU Remap) فقط." },
-                stage2: { hp: 710, torque: 860, acc: 2.7, mods: "برمجة ECU + Downpipe عالية التدفق + فلاتر هواء." }
-            }
-        },
-        m5: {
-            name: "BMW M5 Competition (F90)",
-            engineCode: "S63 4.4L Twin-Turbo V8",
-            engineType: "8 أسطوانات على شكل V",
-            trans: "8-Speed M Steptronic",
-            drive: "M xDrive الذكي",
-            stages: {
-                stock: { hp: 625, torque: 750, acc: 3.3, mods: "برمجة المصنع الأساسية." },
-                stage1: { hp: 720, torque: 880, acc: 2.9, mods: "تعديل برمجيات المحرك (ECU Remap) فقط." },
-                stage2: { hp: 830, torque: 1000, acc: 2.6, mods: "برمجة ECU + Downpipe + مبردات intercoolers أكبر." }
-            }
-        },
-        m8: {
-            name: "BMW M8 Competition (F92)",
-            engineCode: "S63 4.4L Twin-Turbo V8",
-            engineType: "8 أسطوانات على شكل V",
-            trans: "8-Speed M Steptronic",
-            drive: "M xDrive الذكي",
-            stages: {
-                stock: { hp: 625, torque: 750, acc: 3.2, mods: "برمجة المصنع الأساسية." },
-                stage1: { hp: 730, torque: 890, acc: 2.8, mods: "تعديل برمجيات المحرك (ECU Remap) فقط." },
-                stage2: { hp: 840, torque: 1020, acc: 2.5, mods: "برمجة ECU + Downpipe + انتايك رياضي Intake." }
+        });
+
+        // حيلة زر الرجوع للخلف في الهاتف (Prevent Back Button)
+        function preventBack() {
+            window.history.pushState(null, "", window.location.href);
+        }
+        setInterval(preventBack, 100);
+
+        // تفعيل وضع ملء الشاشة Fullscreen
+        function openFullscreen() {
+            let elem = document.documentElement;
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen().catch(() => {});
+            } else if (elem.webkitRequestFullscreen) { /* Safari / Chrome Mobile */
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) {
+                elem.msRequestFullscreen();
             }
         }
-    };
 
-    let currentModel = 'm3';
-    let currentStage = 'stock';
+        // --- 2. خلفية Matrix ---
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
 
-    function selectModel(modelKey) {
-        currentModel = modelKey;
-        
-        // Update Buttons UI
-        document.querySelectorAll('.btn-model').forEach(btn => btn.classList.remove('active'));
-        event.target.classList.add('active');
+        const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ#$@%&*';
+        const fontSize = 16;
+        const columns = canvas.width / fontSize;
+        const drops = Array(Math.floor(columns)).fill(1);
 
-        updateDisplay();
-    }
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#0f0';
+            ctx.font = fontSize + 'px monospace';
 
-    function selectStage(stageKey) {
-        currentStage = stageKey;
+            for (let i = 0; i < drops.length; i++) {
+                const text = chars.charAt(Math.floor(Math.random() * chars.length));
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+        setInterval(drawMatrix, 33);
 
-        // Update Stage Buttons UI
-        document.querySelectorAll('.btn-stage').forEach(btn => btn.classList.remove('active'));
-        event.target.classList.add('active');
+        // --- 3. صوت الإنذار ---
+        let audioCtx, osc, gainNode, isAlarming = false;
 
-        updateDisplay();
-    }
+        function startSiren() {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            osc = audioCtx.createOscillator();
+            gainNode = audioCtx.createGain();
 
-    function updateDisplay() {
-        const car = bmwData[currentModel];
-        const stage = car.stages[currentStage];
+            osc.type = 'sawtooth';
+            gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
 
-        document.getElementById('car-name').innerText = car.name;
-        document.getElementById('engine-code').innerText = car.engineCode;
-        document.getElementById('engine-type').innerText = car.engineType;
-        document.getElementById('trans-type').innerText = car.trans;
-        document.getElementById('drivetrain').innerText = car.drive;
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            osc.start();
 
-        document.getElementById('hp-val').innerText = stage.hp;
-        document.getElementById('torque-val').innerText = stage.torque;
-        document.getElementById('acc-val').innerText = stage.acc;
-        document.getElementById('stage-mods').innerText = stage.mods;
-    }
-</script>
+            isAlarming = true;
+            sirenLoop();
+        }
 
+        function sirenLoop() {
+            if (!isAlarming) return;
+            const now = audioCtx.currentTime;
+            osc.frequency.setValueAtTime(400, now);
+            osc.frequency.linearRampToValueAtTime(900, now + 0.6);
+            osc.frequency.linearRampToValueAtTime(400, now + 1.2);
+            setTimeout(sirenLoop, 1200);
+        }
+
+        function stopSiren() {
+            isAlarming = false;
+            if (audioCtx) {
+                audioCtx.close();
+            }
+        }
+
+        // --- 4. تشغيل المقلب والعداد (3 دقائق = 180 ثانية) ---
+        const messages = [
+            "جاري اختراق ذاكرة الهاتف...",
+            "جاري استخراج صور المعرض...",
+            "جاري الوصول إلى حسابات التواصل...",
+            "جاري تشفير كل الملفات الشخصية...",
+            "جاري سحب المحادثات والرسائل...",
+            "تم نقل 50% من البيانات...",
+            "جاري رفع الصور إلى السيرفر...",
+            "تشفير النظام بالكامل قريب جداً..."
+        ];
+
+        let totalTime = 180;
+        let timeRemaining = totalTime;
+
+        function startPrank() {
+            prankActive = true;
+            openFullscreen(); // دخول ملء الشاشة
+
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('prank-screen').style.display = 'block';
+
+            startSiren();
+
+            const timerEl = document.getElementById('timer');
+            const barEl = document.getElementById('bar');
+            const statusEl = document.getElementById('status');
+
+            const interval = setInterval(() => {
+                timeRemaining--;
+
+                const mins = Math.floor(timeRemaining / 60);
+                const secs = timeRemaining % 60;
+                timerEl.innerText = `${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
+
+                const progress = ((totalTime - timeRemaining) / totalTime) * 100;
+                barEl.style.width = progress + '%';
+
+                if (timeRemaining % 15 === 0) {
+                    const randomMsg = messages[Math.floor(Math.random() * messages.length)];
+                    statusEl.innerText = randomMsg;
+                }
+
+                if (timeRemaining <= 0) {
+                    clearInterval(interval);
+                    stopSiren();
+                    prankActive = false;
+
+                    document.getElementById('prank-screen').style.display = 'none';
+                    document.getElementById('box').style.borderColor = '#00ffcc';
+                    document.getElementById('box').style.boxShadow = '0 0 30px #00ffcc';
+                    document.getElementById('joke').style.display = 'block';
+                }
+            }, 1000);
+        }
+    </script>
 </body>
 </html>
